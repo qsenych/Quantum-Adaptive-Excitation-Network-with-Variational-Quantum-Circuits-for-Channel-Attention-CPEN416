@@ -35,4 +35,4 @@ Tasks will be divided among team members and completed with weekly deadlines for
         - Finish Model Training
         - Complete report and presentation, delegation TBD
 
-All presentation loose ends to be tied up by November 30th for final review before submission.
+All loose ends to be tied up by November 30th for final review before submission.
