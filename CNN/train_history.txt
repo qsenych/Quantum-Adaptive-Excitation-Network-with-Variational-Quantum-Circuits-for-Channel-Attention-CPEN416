@@ -1,0 +1,4 @@
+November 16, 2025: Modelset 1
+- CIFAR-10: 54%
+- F-MNIST: 10%
+- MNIST: 11%
