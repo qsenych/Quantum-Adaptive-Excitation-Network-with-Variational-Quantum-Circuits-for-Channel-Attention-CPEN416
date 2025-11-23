@@ -18,8 +18,8 @@ class VQC(nn.Module):
 
         self.dev = qml.device("default.qubit", wires=num_qubits)
 
-        # makes weights of the angles to be trained
-        self.weights = nn.Parameter(torch.zeros(num_layers, num_qubits, 3))
+        # makes weights of the angles to be trained, randn to avoid barren plateaus
+        self.weights = nn.Parameter(torch.randn(num_layers, num_qubits, 3))
 
         self.qnode = qml.QNode(self.quantum_circuit, self.dev, interface="torch", diff_method="parameter-shift")
         
@@ -36,14 +36,15 @@ class VQC(nn.Module):
             qml.RY(angle_1, wires=wire)
             qml.RZ(angle_2, wires=wire)
 
-        for wire in range(self.num_qubits):
-            rotation_0, rotation_1, rotation_2 = weights[0, wire]
-            qml.Rot(rotation_0, rotation_1, rotation_2, wires=wire)
-
-        qml.CNOT(wires=[0, 1]) 
-        qml.CNOT(wires=[1, 2])
-        qml.CNOT(wires=[2, 3])
-        qml.CNOT(wires=[3, 0])
+        for l in range(self.num_layers):
+            qml.CNOT(wires=[0, 1]) 
+            qml.CNOT(wires=[1, 2])
+            qml.CNOT(wires=[2, 3])
+            qml.CNOT(wires=[3, 0])
+            
+            for wire in range(self.num_qubits):
+                rotation_0, rotation_1, rotation_2 = weights[l, wire]
+                qml.U3(rotation_0, rotation_1, rotation_2, wires=wire)
 
         # measures with pauli z observable (-1 to 1)
         expectations = []
@@ -53,7 +54,7 @@ class VQC(nn.Module):
 
         return expectations
 
-    def excitation(self, enc_angles):
+    def forward(self, enc_angles):
         batch_outputs = []
 
         # loop over each sample
