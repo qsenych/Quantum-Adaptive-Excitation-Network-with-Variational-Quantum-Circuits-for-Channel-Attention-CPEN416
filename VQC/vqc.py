@@ -16,9 +16,12 @@ class VQC(nn.Module):
         self.num_qubits = num_qubits
         self.num_layers = num_layers
 
+        # having issues with GPU
+        # self.dev = qml.device("lightning.gpu", wires=num_qubits)
         self.dev = qml.device("default.qubit", wires=num_qubits)
 
         # makes weights of the angles to be trained, randn to avoid barren plateaus
+        # self.weights = nn.Parameter(torch.randn(num_layers, num_qubits, 3).cuda())
         self.weights = nn.Parameter(torch.randn(num_layers, num_qubits, 3))
 
         self.qnode = qml.QNode(self.quantum_circuit, self.dev, interface="torch", diff_method="parameter-shift")
@@ -142,8 +145,8 @@ class MNISTModel(nn.Module):
         self.conv2 = nn.Conv2d(12,16, kernel_size=5)
         self.flatten_dim = 16 * 4 * 4
         self.fc1 = nn.Linear(self.flatten_dim, 256)
-        self.fc1 = nn.Linear(256, 128)
-        self.fc2 = nn.Linear(128, 10)
+        self.fc2 = nn.Linear(256, 128)
+        self.fc3 = nn.Linear(128, 10)
         self.dropout = nn.Dropout(0.5)
 
 
