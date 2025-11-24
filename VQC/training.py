@@ -3,20 +3,32 @@ import torch.nn as nn
 import torch.optim as optim
 import torchvision
 import torchvision.transforms as transforms
+# import pandas as pd
 from torch.utils.data import DataLoader
+from torch.utils.tensorboard import SummaryWriter
 import pennylane as qml
 import vqc
 
 # WARNING: AI was used for this script
+# https://pythonguides.com/pytorch-mnist/
 def train_model():
-    BATCH_SIZE = 32
+    BATCH_SIZE = 128
     LEARNING_RATE = 0.001
-    EPOCHS = 1
+    EPOCHS = 10
+
+    # history = {
+    #     'epoch': [],
+    #     'avg_loss': [],
+    #     'accuracy': [],
+    #     'test_accuracy': [],
+    # }
+    writer = SummaryWriter('runs/qae_MNIST_1')
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"training on: {device}")
 
-    model = vqc.MNISTModel().to(device)
+    model = vqc.MNISTModel()
+    model.to(device)
 
     transform = transforms.Compose([
         transforms.ToTensor(),
@@ -42,7 +54,6 @@ def train_model():
     test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False)
 
     # --- Setup ---
-    model = vqc.MNISTModel()
     optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)
     criterion = nn.CrossEntropyLoss()
 
@@ -72,7 +83,11 @@ def train_model():
             pred = output.argmax(dim=1, keepdim=True)
             correct += pred.eq(target.view_as(pred)).sum().item()
 
+
             if batch_idx % 10 == 0:
+                global_step = epoch * len(train_loader) + batch_idx
+                writer.add_scalar('Loss/train_batch', loss.item(), global_step)
+
                 print(f"Epoch {epoch+1} [{batch_idx * len(data)}/{len(train_loader.dataset)}] "
                       f"Loss: {loss.item():.4f}")
 
@@ -80,6 +95,13 @@ def train_model():
         avg_loss = total_loss / len(train_loader)
         accuracy = 100. * correct / len(train_loader.dataset)
         print(f"Epoch {epoch+1} Complete. Avg Loss: {avg_loss:.4f}, Accuracy: {accuracy:.2f}%")
+
+        # history['epoch'].append(epoch + 1)
+        # history['avg_loss'].append(avg_loss)
+        # history['accuracy'].append(accuracy)
+        
+        writer.add_scalar('Loss/train_avg_epoch', avg_loss, epoch)
+        writer.add_scalar('Accuracy/train_epoch', accuracy, epoch)
 
     # --- Evaluation ---
     print("\nEvaluating on Test Set...")
@@ -91,7 +113,12 @@ def train_model():
             pred = output.argmax(dim=1, keepdim=True)
             test_correct += pred.eq(target.view_as(pred)).sum().item()
 
-    print(f"Test Accuracy: {100. * test_correct / len(test_loader.dataset):.2f}%")
+    test_accuracy = 100. * test_correct / len(test_loader.dataset)
+    print(f"Test Accuracy: {test_accuracy:.2f}%")
+    # history['test_accuracy'].append(test_accuracy)
+    writer.add_scalar('Accuracy/test_epoch', test_accuracy, epoch)
+
+    writer.close()
 
 if __name__ == "__main__":
     train_model()

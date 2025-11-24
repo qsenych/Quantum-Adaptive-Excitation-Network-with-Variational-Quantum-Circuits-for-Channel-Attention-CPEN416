@@ -16,19 +16,22 @@ class VQC(nn.Module):
         self.num_qubits = num_qubits
         self.num_layers = num_layers
 
-        # having issues with GPU
-        # self.dev = qml.device("lightning.gpu", wires=num_qubits)
-        self.dev = qml.device("default.qubit", wires=num_qubits)
+        self.dev = qml.device("lightning.gpu", wires=num_qubits)
 
         # makes weights of the angles to be trained, randn to avoid barren plateaus
-        # self.weights = nn.Parameter(torch.randn(num_layers, num_qubits, 3).cuda())
         self.weights = nn.Parameter(torch.randn(num_layers, num_qubits, 3))
 
         self.qnode = qml.QNode(self.quantum_circuit, self.dev, interface="torch", diff_method="parameter-shift")
+        # base_qnode = qml.QNode(self.quantum_circuit, self.dev, interface="torch", diff_method="parameter-shift")
+        # self.qnode = qml.batch_input(base_qnode, argnum=0)
+
         
     
     def quantum_circuit(self, enc_angles, weights):
-        """ Creates the quantum circuit """
+        """ 
+        Creates the quantum circuit. Edited to go batch by batch
+        for increased training speed.
+        """
 
         for wire in range(self.num_qubits):
             qml.Hadamard(wires=wire)
@@ -70,7 +73,10 @@ class VQC(nn.Module):
             result_tensor = torch.stack(result_tuple).float()
             batch_outputs.append(result_tensor)
 
-        return torch.stack(batch_outputs, dim=0)
+        return torch.stack(batch_outputs, dim=0) #
+
+        # result_tuple = self.qnode(x, self.weights)
+        # return torch.stack(result_tuple, dim=1).float()
     
 class QAELayer(nn.Module):
     def __init__(self, channels=12, num_qubits=4, vqc_layers=1):
@@ -101,34 +107,34 @@ class QAELayer(nn.Module):
         return x * attention_weights
     
 
-class InitialCNN_QAE(nn.Module):
-    def __init__(self):
-        super().__init__()
-        # Paper Setup: Conv(12) -> QAE -> Conv(16) 
+# class InitialCNN_QAE(nn.Module):
+#     def __init__(self):
+#         super().__init__()
+#         # Paper Setup: Conv(12) -> QAE -> Conv(16) 
         
-        self.conv1 = nn.Conv2d(1, 12, kernel_size=5) # MNIST is 1 channel
+#         self.conv1 = nn.Conv2d(1, 12, kernel_size=5) # MNIST is 1 channel
         
-        # Insert the Quantum Layer here
-        self.qae = QAELayer(channels=12, num_qubits=4, vqc_layers=1)
+#         # Insert the Quantum Layer here
+#         self.qae = QAELayer(channels=12, num_qubits=4, vqc_layers=1)
         
-        self.conv2 = nn.Conv2d(12, 16, kernel_size=5)
-        self.fc1 = nn.Linear(16 * 4 * 4, 256) # Dimension depends on input image size
-        self.fc2 = nn.Linear(256, 10)
+#         self.conv2 = nn.Conv2d(12, 16, kernel_size=5)
+#         self.fc1 = nn.Linear(16 * 4 * 4, 256) # Dimension depends on input image size
+#         self.fc2 = nn.Linear(256, 10)
 
-    def forward(self, x):
-        x = torch.relu(self.conv1(x))
-        x = torch.max_pool2d(x, 2)
+#     def forward(self, x):
+#         x = torch.relu(self.conv1(x))
+#         x = torch.max_pool2d(x, 2)
         
-        # Apply Quantum Attention
-        x = self.qae(x)
+#         # Apply Quantum Attention
+#         x = self.qae(x)
         
-        x = torch.relu(self.conv2(x))
-        x = torch.max_pool2d(x, 2)
+#         x = torch.relu(self.conv2(x))
+#         x = torch.max_pool2d(x, 2)
         
-        x = x.view(x.size(0), -1)
-        x = torch.relu(self.fc1(x))
-        x = self.fc2(x)
-        return x
+#         x = x.view(x.size(0), -1)
+#         x = torch.relu(self.fc1(x))
+#         x = self.fc2(x)
+#         return x
 
 
 class MNISTModel(nn.Module):
@@ -168,11 +174,11 @@ class MNISTModel(nn.Module):
         return x
     
 
-def test_initialCNN():
-    model = InitialCNN_QAE()
-    test_input = torch.randn(5, 1, 28, 28)
-    output = model(test_input)
-    # expected output is 5, 10
-    print(f"output shape: {output.shape}")
+# def test_initialCNN():
+#     model = InitialCNN_QAE()
+#     test_input = torch.randn(5, 1, 28, 28)
+#     output = model(test_input)
+#     # expected output is 5, 10
+#     print(f"output shape: {output.shape}")
 
-test_initialCNN()
+# test_initialCNN()
