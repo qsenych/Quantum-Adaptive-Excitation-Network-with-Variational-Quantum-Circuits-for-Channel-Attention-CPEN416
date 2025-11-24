@@ -6,12 +6,13 @@ import torchvision.transforms as transforms
 # import pandas as pd
 from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
-import pennylane as qml
 import vqc
 
-# WARNING: AI was used for this script
-# https://pythonguides.com/pytorch-mnist/
 def train_model():
+    """
+    Heavily influenced by this guide right here:
+        https://pythonguides.com/pytorch-mnist/
+    """
     BATCH_SIZE = 128
     LEARNING_RATE = 0.001
     EPOCHS = 10
@@ -47,19 +48,18 @@ def train_model():
         train=False, 
         transform=transform)
 
-    # Use a subset for quick testing if you don't have a GPU
-    # train_dataset = torch.utils.data.Subset(train_dataset, range(100)) 
+    # Could use subset for training for efficiency
+    train_dataset = torch.utils.data.Subset(train_dataset, range(100)) 
     
     train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True)
     test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False)
 
-    # --- Setup ---
+    # TODO: Double check optimizer/optimization methods 
     optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)
     criterion = nn.CrossEntropyLoss()
 
     print("Starting training...")
     
-    # --- Training Loop ---
     model.train()
     for epoch in range(EPOCHS):
         total_loss = 0
@@ -91,7 +91,6 @@ def train_model():
                 print(f"Epoch {epoch+1} [{batch_idx * len(data)}/{len(train_loader.dataset)}] "
                       f"Loss: {loss.item():.4f}")
 
-        # --- Epoch Stats ---
         avg_loss = total_loss / len(train_loader)
         accuracy = 100. * correct / len(train_loader.dataset)
         print(f"Epoch {epoch+1} Complete. Avg Loss: {avg_loss:.4f}, Accuracy: {accuracy:.2f}%")
@@ -103,7 +102,6 @@ def train_model():
         writer.add_scalar('Loss/train_avg_epoch', avg_loss, epoch)
         writer.add_scalar('Accuracy/train_epoch', accuracy, epoch)
 
-    # --- Evaluation ---
     print("\nEvaluating on Test Set...")
     model.eval()
     test_correct = 0
