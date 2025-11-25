@@ -8,14 +8,25 @@ from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 import vqc
 
+""" 
+TODO:
+    Add timing (to compare training times)
+    Ensure data colleciton/graphing works with tensorboard
+    Add functionality for each dataset
+"""
+
 def train_model():
     """
     Heavily influenced by this guide right here:
         https://pythonguides.com/pytorch-mnist/
     """
-    BATCH_SIZE = 128
+    BATCH_SIZE = 512
+    SUBSET_SIZE = 60000
     LEARNING_RATE = 0.001
-    EPOCHS = 10
+    EPOCHS = 50
+
+    # Every BATCH_SAMPLING_RES  batches it records a value
+    BATCH_SAMPLING_RES = 5
 
     # history = {
     #     'epoch': [],
@@ -23,12 +34,12 @@ def train_model():
     #     'accuracy': [],
     #     'test_accuracy': [],
     # }
-    writer = SummaryWriter('runs/qae_MNIST_1')
+    writer = SummaryWriter('runs/QAE_MNIST_full')
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"training on: {device}")
 
-    model = vqc.MNISTModel()
+    model = vqc.QAE_net()
     model.to(device)
 
     transform = transforms.Compose([
@@ -49,10 +60,10 @@ def train_model():
         transform=transform)
 
     # Could use subset for training for efficiency
-    train_dataset = torch.utils.data.Subset(train_dataset, range(100)) 
+    train_dataset = torch.utils.data.Subset(train_dataset, range(SUBSET_SIZE)) 
     
-    train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True)
-    test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False)
+    train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True, pin_memory=True)
+    test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False, pin_memory=True)
 
     # TODO: Double check optimizer/optimization methods 
     optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)
@@ -84,11 +95,11 @@ def train_model():
             correct += pred.eq(target.view_as(pred)).sum().item()
 
 
-            if batch_idx % 10 == 0:
+            if batch_idx % BATCH_SAMPLING_RES == 0:
                 global_step = epoch * len(train_loader) + batch_idx
                 writer.add_scalar('Loss/train_batch', loss.item(), global_step)
 
-                print(f"Epoch {epoch+1} [{batch_idx * len(data)}/{len(train_loader.dataset)}] "
+                print(f"Epoch {epoch+1} [{(batch_idx + 1) * len(data)}/{len(train_loader.dataset)}] "
                       f"Loss: {loss.item():.4f}")
 
         avg_loss = total_loss / len(train_loader)
@@ -107,6 +118,7 @@ def train_model():
     test_correct = 0
     with torch.no_grad():
         for data, target in test_loader:
+            data, target = data.to(device), target.to(device)
             output = model(data)
             pred = output.argmax(dim=1, keepdim=True)
             test_correct += pred.eq(target.view_as(pred)).sum().item()

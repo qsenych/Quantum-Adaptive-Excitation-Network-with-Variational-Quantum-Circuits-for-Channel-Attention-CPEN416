@@ -2,6 +2,12 @@ import torch
 import torch.nn as nn
 import pennylane as qml
 
+""" 
+TODO:
+    Ensure Layer increases work (Especially with CIFAR)
+    Standardize docstrings and improve inline documentation
+"""
+
 class QuantumAttnBlk(nn.Module):
     """
     Implements the quantum circuit for channelwise attention.
