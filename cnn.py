@@ -44,3 +44,47 @@ class CNN(nn.Module):
         x = self.dropout(x)
         x = self.fc3(x)
         return x
+
+class CNN_CIFAR(nn.Module):
+    """
+    Lightweight CNN enhanced with Quantum Channel Attention
+
+    Architecture:
+        Conv(12) -> maxPool -> q_attn -> Conv(16) -> maxPool -> FC(256) -> FC(128)
+    """
+    def __init__(self, model: str = "qae", vqc_layers: int = 1):
+        super().__init__()
+
+        # CIFAR had 3 input channels
+        self.conv1 = nn.Conv2d(3, 12, kernel_size=5) 
+        self.pool = nn.MaxPool2d(2)
+
+        if (model == "qae"):
+            self.attn = qae.QuantumChannelAttn(channels=12, num_qubits=4, vqc_layers=vqc_layers)
+        elif (model == "sen"):
+            self.attn = sen.SEBlock(channels=12, reduction_ratio=3)
+
+        self.conv2 = nn.Conv2d(12,16, kernel_size=5)
+        # must be good for 32x32 input
+        self.flatten_dim = 16 * 5 * 5
+        self.fc1 = nn.Linear(self.flatten_dim, 256)
+        self.fc2 = nn.Linear(256, 128)
+        self.fc3 = nn.Linear(128, 10)
+        self.dropout = nn.Dropout(0.5)
+
+    def forward(self, x):
+        #TODO: Double check that doing .relu is correct
+        x = self.conv1(x)
+        x = self.pool(x)
+
+        x = self.attn(x)
+
+        x = self.conv2(x)
+        x = self.pool(x)
+
+        x = x.view(-1, self.flatten_dim)
+        x = torch.relu(self.fc1(x))
+        x = torch.relu(self.fc2(x))
+        x = self.dropout(x)
+        x = self.fc3(x)
+        return x
