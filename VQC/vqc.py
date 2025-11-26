@@ -25,7 +25,8 @@ class QuantumAttnBlk(nn.Module):
         super().__init__()
         self.num_qubits = num_qubits
         self.num_layers = num_layers
-
+        
+        # Lightning gpu is called for in the paper
         dev = qml.device("lightning.gpu", wires=num_qubits)
 
         # TODO: Double check and verify that doing "adjoint" as diff_method is
@@ -91,6 +92,7 @@ class QuantumChannelAttn(nn.Module):
         self.channels = channels
         self.num_qubits = num_qubits
 
+        # Quantum Squeeze 
         self.avg_pool = nn.AdaptiveAvgPool2d(1)
 
         self.quantum_encoder = QuantumAttnBlk(
@@ -126,18 +128,27 @@ class QAE_net(nn.Module):
     def __init__(self):
         super().__init__()
 
+        # First paremter is # of channels, will go up to 3 for CIFAR-10
+        # Does this mean second parameter is 36?
         self.conv1 = nn.Conv2d(1, 12, kernel_size=5) #MNIST is 1 channel
+
         self.pool = nn.MaxPool2d(2)
 
         self.q_attn = QuantumChannelAttn(channels=12, num_qubits=4, vqc_layers=1)
 
+        # 16 as mentioned in the paper
         self.conv2 = nn.Conv2d(12,16, kernel_size=5)
         self.flatten_dim = 16 * 4 * 4
         self.fc1 = nn.Linear(self.flatten_dim, 256)
         self.fc2 = nn.Linear(256, 128)
-        self.fc3 = nn.Linear(128, 10)
-        self.dropout = nn.Dropout(0.5)
 
+        # Note sure of exactly what this does, but it 
+        # is mentioned as being done before the classifcation layer in the paper
+        self.dropout = nn.Dropout(0.5)
+        # Back to 10, because 10 categories
+        self.fc3 = nn.Linear(128, 10)
+        
+    # This actually runs the network
     def forward(self, x):
         #TODO: Double check that doing .relu is correct
         x = torch.relu(self.conv1(x))
