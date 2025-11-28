@@ -9,11 +9,12 @@
 6. F-MNIST details -> https://www.geeksforgeeks.org/deep-learning/fashion-mnist-with-python-keras-and-deep-learning/ 
 7. MNIST details -> https://www.geeksforgeeks.org/machine-learning/mnist-dataset/ 
 8. Pythorch transforms docs -> https://docs.pytorch.org/vision/0.9/transforms.html 
-9. Article on fully connected layers
-https://www.geeksforgeeks.org/deep-learning/what-is-fully-connected-layer-in-deep-learning/
+9. Article on fully connected layers ->
+https://www.geeksforgeeks.org/deep-learning/what-is-fully-connected-layer-in-deep-learning/ 
+10. Squeeze and Excitation Network -> https://medium.com/@tahasamavati/squeeze-and-excitation-explained-387b5981f249 
 --- 
 *Sources Used*
-3,6,7, 9
+3,6,7,9,10
 --- 
 
 

@@ -1,6 +1,8 @@
 import torch
 import torch.nn as nn
 
+"""Used source 10 a lot here (basically just a remake of it)"""
+
 class SqueezeExciteAttn(nn.Module):
     """
     Build a squeeze and excitation layer to compare performance
@@ -14,41 +16,36 @@ class SqueezeExciteAttn(nn.Module):
 
         Activations -> ReLU, and sigmoid
     """
-    def __init__(self, channels = 12): # TODO: Need more params?
+    def __init__(self, b, c = 12): # TODO: Need more params?
         super().__init__()
-        self.channels = channels
+        self.channels = c
 
         """ Squeeze """
         # Use adaptive pooling since I trust pytorch to make
         # a good kernel size
         # Squeeze down to n x 1 -> source 9
         self.squeeze = nn.AdaptiveAvgPool2d(1)
-
+        # TODO: what should dims of the fc layers be?
         """ Excitation """
-        self.fc1 = nn.Linear() # TODO: figure out correct dims
-        self.fc2 = nn.Linear() # TODO: figure out correct dims
-        self.sigmoid = nn.Sigmoid()
-        self.relu = nn.ReLU()
+        self.excitation = nn.Sequential(
+            nn.Linear(c, c, bias = False),
+            nn.ReLU(inplace = True), # Try to use inplace to improve mem efficiency
+            nn.Linear(c, c, bias = False),
+            nn.Sigmoid(),
+        )
         
 
 
     
     def forward(self,x):
         b, c, _, _ = x.size()
+        print("Got X size -> b = ", b, "c = ", c)
+        y = self.squeeze(x).view(b, c)
+        y = self.excitation(y).view(b, c,1,1)
 
-        y = self.squeeze(x).view(b,c)
-        # TODO: Is this the correct way to apply the activation functions?
-        # Also what should dims of the fc layers be?
-        y = self.fc1(y)
-        y = self.relu(y)
-
-        y = self.fc2(y)
-        y = self.sigmoid(y)
- 
-
-        #TODO: does this correctly multiply the weights?
-        # "Scale and combine" from source 9
-        return x * y
+        #TODO: do we want to expand the y in QAE too?
+        # "Scale and combine" from source 10
+        return x * y.expand_as(x)
 
 class SEN_net(nn.Module):
     """
@@ -66,7 +63,7 @@ class SEN_net(nn.Module):
 
         self.pool = nn.MaxPool2d(2)
 
-        self.squeeze_excite = SqueezeExciteAttn(channels=12, num_qubits=4, vqc_layers=1)
+        self.squeeze_excite = SqueezeExciteAttn(b=1,c=12)
 
         # 16 as mentioned in the paper
         self.conv2 = nn.Conv2d(12,16, kernel_size=5)
@@ -88,6 +85,7 @@ class SEN_net(nn.Module):
 
         x = self.squeeze_excite(x)
 
+        # maybe remove the relu layers
         x = torch.relu(self.conv2(x))
         x = self.pool(x)
 

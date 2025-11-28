@@ -3,6 +3,7 @@ import torch.nn as nn
 import torch.optim as optim
 import torchvision
 import torchvision.transforms as transforms
+import torch.utils.tensorboard
 # import pandas as pd
 from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
@@ -15,7 +16,7 @@ def train_model():
     """
     BATCH_SIZE = 128
     LEARNING_RATE = 0.001
-    EPOCHS = 10
+    EPOCHS = 50
 
     # history = {
     #     'epoch': [],
@@ -28,7 +29,7 @@ def train_model():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"training on: {device}")
 
-    model = sen.MNISTModel()
+    model = sen.SEN_net()
     model.to(device)
 
     transform = transforms.Compose([
