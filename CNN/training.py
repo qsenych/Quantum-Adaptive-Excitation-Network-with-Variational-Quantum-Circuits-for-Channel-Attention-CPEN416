@@ -3,20 +3,24 @@ import torch.nn as nn
 import torch.optim as optim
 import torchvision
 import torchvision.transforms as transforms
-import torch.utils.tensorboard
 # import pandas as pd
 from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 import sen
+import time
 
-def train_model():
+def train_model(data):
     """
     Heavily influenced by this guide right here:
         https://pythonguides.com/pytorch-mnist/
     """
-    BATCH_SIZE = 128
+    BATCH_SIZE = 100
     LEARNING_RATE = 0.001
-    EPOCHS = 50
+    if data == "CIFAR":
+        EPOCHS = 200
+    else:
+        EPOCHS = 50
+    SUBSET_SIZE = 5000
 
     # history = {
     #     'epoch': [],
@@ -28,8 +32,10 @@ def train_model():
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"training on: {device}")
-
-    model = sen.SEN_net()
+    if(data == "CIFAR"):
+        model = sen.SEN_net(model_cifar=True)
+    else:
+        model = sen.SEN_net(model_cifar=False)
     model.to(device)
 
     transform = transforms.Compose([
@@ -37,20 +43,45 @@ def train_model():
         #Standard MNIST normalization
         transforms.Normalize((0.1307,), (0.3081)) 
     ])
-
-    train_dataset = torchvision.datasets.MNIST(
-        root='./data', 
-        train=True, 
-        download=True, 
-        transform=transform
-        )
-    test_dataset = torchvision.datasets.MNIST(
-        root='./data', 
-        train=False, 
-        transform=transform)
-
+    if data == "MNIST":
+        train_dataset = torchvision.datasets.MNIST(
+            root='./data', 
+            train=True, 
+            download=True, 
+            transform=transform
+            )
+        test_dataset = torchvision.datasets.MNIST(
+            root='./data', 
+            train=False, 
+            transform=transform)
+    elif data == "F-MNIST":
+        train_dataset = torchvision.datasets.FashionMNIST(
+            root='./data', 
+            train=True, 
+            download=True, 
+            transform=transform
+            )
+        test_dataset = torchvision.datasets.FashionMNIST(
+            root='./data', 
+            train=False, 
+            transform=transform)
+    elif data == "CIFAR":
+        train_dataset = torchvision.datasets.CIFAR10(
+            root='./data', 
+            train=True, 
+            download=True, 
+            transform=transform
+            )
+        test_dataset = torchvision.datasets.CIFAR10(
+            root='./data', 
+            train=False, 
+            transform=transform)
+    else:
+        print("ERROR: Please Specify a Valid Dataset!")
+        return
+    
     # Could use subset for training for efficiency
-    train_dataset = torch.utils.data.Subset(train_dataset, range(100)) 
+    # train_dataset = torch.utils.data.Subset(train_dataset, range(SUBSET_SIZE)) 
     
     train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True)
     test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False)
@@ -118,6 +149,19 @@ def train_model():
     writer.add_scalar('Accuracy/test_epoch', test_accuracy, epoch)
 
     writer.close()
+    return test_accuracy
 
 if __name__ == "__main__":
-    train_model()
+    # Timing retrieved from: https://docs.python.org/3/library/time.html#time.perf_counter
+    time1 = time.perf_counter()
+
+    cifar_acc = train_model("CIFAR")
+    f_mnist_acc = train_model("F-MNIST")
+    mnist_acc = train_model("MNIST")
+
+    time2 = time.perf_counter()
+
+    print("Finished training all datasets. \n Accuracies are:\n" \
+    "- CIFAR_10: ", cifar_acc, "\n- F_MNIST:", f_mnist_acc,
+    "\n- MNIST: ", mnist_acc,
+    "\nTotal time (seconds) was:", time2-time1)

@@ -39,7 +39,7 @@ class SqueezeExciteAttn(nn.Module):
     
     def forward(self,x):
         b, c, _, _ = x.size()
-        print("Got X size -> b = ", b, "c = ", c)
+        #print("Got X size -> b = ", b, "c = ", c)
         y = self.squeeze(x).view(b, c)
         y = self.excitation(y).view(b, c,1,1)
 
@@ -54,12 +54,15 @@ class SEN_net(nn.Module):
     Architecture:
         Conv(12) -> maxPool -> S&E -> Conv(16) -> maxPool -> FC(256) -> FC(128)
     """
-    def __init__(self):
+    def __init__(self, model_cifar: bool = False):
         super().__init__()
 
         # First paremter is # of channels, will go up to 3 for CIFAR-10
         # Does this mean second parameter is 36?
-        self.conv1 = nn.Conv2d(1, 12, kernel_size=5) #MNIST is 1 channel
+        if model_cifar:
+            self.conv1 = nn.Conv2d(3, 12, kernel_size=5) #CIFAR is 3 channel
+        else:
+            self.conv1 = nn.Conv2d(1, 12, kernel_size=5)
 
         self.pool = nn.MaxPool2d(2)
 
@@ -67,7 +70,10 @@ class SEN_net(nn.Module):
 
         # 16 as mentioned in the paper
         self.conv2 = nn.Conv2d(12,16, kernel_size=5)
-        self.flatten_dim = 16 * 4 * 4
+        if model_cifar:
+            self.flatten_dim = 16 * 5 * 5
+        else:
+            self.flatten_dim = 16 * 4 * 4
         self.fc1 = nn.Linear(self.flatten_dim, 256)
         self.fc2 = nn.Linear(256, 128)
 
