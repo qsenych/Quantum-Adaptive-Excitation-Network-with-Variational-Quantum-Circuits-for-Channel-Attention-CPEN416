@@ -6,12 +6,12 @@ import torchvision.transforms as transforms
 # import pandas as pd
 from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
-import trainQAEMNIST
-import trainQAECiFAR
-import trainSENMNIST
-import trainSENCiFAR
-import trainSENF_MNIST
-import trainQAEF_MNIST
+import train.trainQAEMNIST
+import train.trainQAECiFAR
+import train.trainSENMNIST
+import train.trainSENCiFAR
+import train.trainSENF_MNIST
+import train.trainQAEF_MNIST
 
 """ 
 A script to train and compare  accuracy of all models.

@@ -15,7 +15,7 @@ TODO:
     Add functionality for each dataset
 """
 
-def trainSENMNIST():
+def trainQAECiFAR():
     """
     Heavily influenced by this guide right here:
         https://pythonguides.com/pytorch-mnist/
@@ -23,7 +23,7 @@ def trainSENMNIST():
     BATCH_SIZE = 1000
     SUBSET_SIZE = 60000
     LEARNING_RATE = 0.001
-    EPOCHS = 50
+    EPOCHS = 200
 
     # Every BATCH_SAMPLING_RES  batches it records a value
     BATCH_SAMPLING_RES = 6
@@ -34,45 +34,42 @@ def trainSENMNIST():
     #     'accuracy': [],
     #     'test_accuracy': [],
     # }
-    writer = SummaryWriter('runs/SEN_MNIST')
+    writer = SummaryWriter('runs/QAE_CiFAR')
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"training on: {device}")
 
-    model = cnn.CNN("sen")
+    model = cnn.CNN_CIFAR("qae", vqc_layers=3)
     model.to(device)
 
     transform = transforms.Compose([
         transforms.ToTensor(),
-        #Standard MNIST normalization
-        transforms.Normalize((0.1307,), (0.3081)) 
+        #Standard CIFAR-10 normalization
+        transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)) 
     ])
 
-    train_dataset = torchvision.datasets.FashionMNIST(
+    train_dataset = torchvision.datasets.CIFAR10(
         root='./data', 
         train=True, 
         download=True, 
         transform=transform
         )
-    test_dataset = torchvision.datasets.FashionMNIST(
+    test_dataset = torchvision.datasets.CIFAR10(
         root='./data', 
         train=False, 
         transform=transform)
 
     # Could use subset for training for efficiency
-    train_dataset = torch.utils.data.Subset(train_dataset, range(SUBSET_SIZE)) 
+    # train_dataset = torch.utils.data.Subset(train_dataset, range(SUBSET_SIZE)) 
     
-    train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True)
-    test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False)
-	
-	# train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True)
-	# test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False)
+    train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True, pin_memory=True)
+    test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False, pin_memory=True)
 
     # TODO: Double check optimizer/optimization methods 
     optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)
     criterion = nn.CrossEntropyLoss()
 
-    print("Starting training...")
+    print("Starting training on CIFAR-10")
     
     model.train()
     for epoch in range(EPOCHS):
@@ -98,7 +95,7 @@ def trainSENMNIST():
             correct += pred.eq(target.view_as(pred)).sum().item()
 
 
-            if batch_idx % BATCH_SAMPLING_RES == 0:
+            if (batch_idx + 1) % BATCH_SAMPLING_RES == 0:
                 global_step = epoch * len(train_loader) + batch_idx
                 writer.add_scalar('Loss/train_batch', loss.item(), global_step)
 
@@ -136,4 +133,4 @@ def trainSENMNIST():
     return test_accuracy
 
 if __name__ == "__main__":
-    trainSENMNIST()
+    trainQAECiFAR()
