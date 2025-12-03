@@ -1,1 +1,8 @@
 .venv
+runs/
+venv/
+*/__pycache__/*
+__pycache__/
+data/
+local_docs/
+CNN/
