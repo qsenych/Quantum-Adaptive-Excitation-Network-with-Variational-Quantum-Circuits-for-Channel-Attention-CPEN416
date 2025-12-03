@@ -15,7 +15,7 @@ TODO:
     Add functionality for each dataset
 """
 
-def train_model():
+def trainSENMNIST():
     """
     Heavily influenced by this guide right here:
         https://pythonguides.com/pytorch-mnist/
@@ -48,13 +48,13 @@ def train_model():
         transforms.Normalize((0.1307,), (0.3081)) 
     ])
 
-    train_dataset = torchvision.datasets.MNIST(
+    train_dataset = torchvision.datasets.FashionMNIST(
         root='./data', 
         train=True, 
         download=True, 
         transform=transform
         )
-    test_dataset = torchvision.datasets.MNIST(
+    test_dataset = torchvision.datasets.FashionMNIST(
         root='./data', 
         train=False, 
         transform=transform)
@@ -133,5 +133,7 @@ def train_model():
 
     writer.close()
 
+    return test_accuracy
+
 if __name__ == "__main__":
-    train_model()
+    trainSENMNIST()

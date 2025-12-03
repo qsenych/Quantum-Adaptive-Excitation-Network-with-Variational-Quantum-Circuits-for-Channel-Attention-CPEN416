@@ -62,7 +62,7 @@ class CNN_CIFAR(nn.Module):
         if (model == "qae"):
             self.attn = qae.QuantumChannelAttn(channels=12, num_qubits=4, vqc_layers=vqc_layers)
         elif (model == "sen"):
-            self.attn = sen.SEBlock(channels=12, reduction_ratio=3)
+            self.attn = sen.SEBlock(b=1, c=12)
 
         self.conv2 = nn.Conv2d(12,16, kernel_size=5)
         # must be good for 32x32 input
