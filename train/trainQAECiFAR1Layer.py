@@ -34,12 +34,12 @@ def trainQAECiFAR():
     #     'accuracy': [],
     #     'test_accuracy': [],
     # }
-    writer = SummaryWriter('runs/QAE_CiFAR')
+    writer = SummaryWriter('runs/QAE_CiFAR_1_layer')
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"training on: {device}")
 
-    model = cnn.CNN_CIFAR("qae", vqc_layers=3)
+    model = cnn.CNN_CIFAR("qae", vqc_layers=1)
     model.to(device)
 
     transform = transforms.Compose([
@@ -125,6 +125,10 @@ def trainQAECiFAR():
 
     test_accuracy = 100. * test_correct / len(test_loader.dataset)
     print(f"Test Accuracy: {test_accuracy:.2f}%")
+
+    total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+    print(f'Total number of parameters: {total_params}')
+
     # history['test_accuracy'].append(test_accuracy)
     writer.add_scalar('Accuracy/test_epoch', test_accuracy, epoch)
 

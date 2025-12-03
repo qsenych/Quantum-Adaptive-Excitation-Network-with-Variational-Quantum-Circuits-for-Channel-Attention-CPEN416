@@ -15,7 +15,7 @@ TODO:
     Add functionality for each dataset
 """
 
-def trainSENCiFAR():
+def trainQAECiFAR():
     """
     Heavily influenced by this guide right here:
         https://pythonguides.com/pytorch-mnist/
@@ -34,12 +34,12 @@ def trainSENCiFAR():
     #     'accuracy': [],
     #     'test_accuracy': [],
     # }
-    writer = SummaryWriter('runs/SEN_CiFAR')
+    writer = SummaryWriter('runs/QAE_CiFAR_3_Layer')
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"training on: {device}")
 
-    model = cnn.CNN_CIFAR("sen", vqc_layers=3)
+    model = cnn.CNN_CIFAR("qae", vqc_layers=3)
     model.to(device)
 
     transform = transforms.Compose([
@@ -137,4 +137,4 @@ def trainSENCiFAR():
     return test_accuracy
 
 if __name__ == "__main__":
-    trainSENCiFAR()
+    trainQAECiFAR()

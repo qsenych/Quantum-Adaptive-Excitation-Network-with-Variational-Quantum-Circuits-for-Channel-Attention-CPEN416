@@ -19,13 +19,12 @@ class CNN(nn.Module):
         if (model == "qae"):
             self.attn = qae.QuantumChannelAttn(channels=12, num_qubits=4, vqc_layers=1)
         elif (model == "sen"):
-            self.attn = sen.SEBlock(channels=12, reduction_ratio=3)
+            self.attn = sen.SEBlock(b=1, c=12)
 
         self.conv2 = nn.Conv2d(12,16, kernel_size=5)
         self.flatten_dim = 16 * 4 * 4
-        self.fc1 = nn.Linear(self.flatten_dim, 256)
-        self.fc2 = nn.Linear(256, 128)
-        self.fc3 = nn.Linear(128, 10)
+        self.fc1 = nn.Linear(self.flatten_dim, 128)
+        self.fc2 = nn.Linear(128, 10)
         self.dropout = nn.Dropout(0.5)
 
     def forward(self, x):
@@ -40,9 +39,8 @@ class CNN(nn.Module):
 
         x = x.view(-1, self.flatten_dim)
         x = torch.relu(self.fc1(x))
-        x = torch.relu(self.fc2(x))
         x = self.dropout(x)
-        x = self.fc3(x)
+        x = self.fc2(x)
         return x
 
 class CNN_CIFAR(nn.Module):

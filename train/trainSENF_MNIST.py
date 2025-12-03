@@ -44,8 +44,8 @@ def trainSENMNIST():
 
     transform = transforms.Compose([
         transforms.ToTensor(),
-        #Standard MNIST normalization
-        transforms.Normalize((0.1307,), (0.3081)) 
+        #Standard FMNIST normalization
+        transforms.Normalize((0.5,), (0.5)) 
     ])
 
     train_dataset = torchvision.datasets.FashionMNIST(
@@ -128,6 +128,10 @@ def trainSENMNIST():
 
     test_accuracy = 100. * test_correct / len(test_loader.dataset)
     print(f"Test Accuracy: {test_accuracy:.2f}%")
+
+    total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+    print(f'Total number of parameters: {total_params}')
+
     # history['test_accuracy'].append(test_accuracy)
     writer.add_scalar('Accuracy/test_epoch', test_accuracy, epoch)
 
