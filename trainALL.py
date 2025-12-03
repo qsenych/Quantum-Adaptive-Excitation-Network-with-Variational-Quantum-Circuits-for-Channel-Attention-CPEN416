@@ -35,28 +35,28 @@ if __name__ == "__main__":
     senmnist_acc = trainSENMNIST.trainSENMNIST()
     print(senmnist_acc, "\n")
 
-    print("QAE-Nets:")
+    # print("QAE-Nets:")
 
-    print("- CiFAR:")
-    qaecifar_acc = trainQAECiFAR.trainQAECiFAR()
-    print(qaecifar_acc, "\n")
+    # print("- CiFAR:")
+    # qaecifar_acc = trainQAECiFAR.trainQAECiFAR()
+    # print(qaecifar_acc, "\n")
     
-    print("- F_MNIST:")
-    qaef_mnist_acc = trainQAEF_MNIST.trainQAEF_MNIST()
-    print(qaef_mnist_acc, "\n")
+    # print("- F_MNIST:")
+    # qaef_mnist_acc = trainQAEF_MNIST.trainQAEF_MNIST()
+    # print(qaef_mnist_acc, "\n")
 
-    print("- MNIST")
-    qaemnist_acc = trainQAEMNIST.trainQAEMNIST()
-    print(qaemnist_acc)
+    # print("- MNIST")
+    # qaemnist_acc = trainQAEMNIST.trainQAEMNIST()
+    # print(qaemnist_acc)
 
     print("FINISHED ALL TRAINING:\n " \
     "-----Summary-----\n" \
-    "QAE:\n" \
+    "SEN:\n" \
     "- CiFAR: ", senmnist_acc, 
     "- F_MNIST: ", senf_mnist_acc,
     "- MNIST: ", senmnist_acc,
-    "SEN:\n" \
-    "- CiFAR: ", qaemnist_acc, 
-    "- F_MNIST: ", qaef_mnist_acc,
-    "- MNIST: ", qaemnist_acc,
+    # "QAE:\n" \
+    # "- CiFAR: ", qaemnist_acc, 
+    # "- F_MNIST: ", qaef_mnist_acc,
+    # "- MNIST: ", qaemnist_acc,
     )
