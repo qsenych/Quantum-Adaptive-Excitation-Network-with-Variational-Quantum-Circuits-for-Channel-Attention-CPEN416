@@ -34,7 +34,7 @@ def trainQAEMNIST():
     #     'accuracy': [],
     #     'test_accuracy': [],
     # }
-    writer = SummaryWriter('runs/QAE_MNIST')
+    writer = SummaryWriter('runs/QAE_MNIST_DEMO')
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"training on: {device}")

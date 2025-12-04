@@ -34,7 +34,7 @@ def trainQAECiFAR():
     #     'accuracy': [],
     #     'test_accuracy': [],
     # }
-    writer = SummaryWriter('runs/QAE_CiFAR_2_Layer')
+    writer = SummaryWriter('runs/QAE_CiFAR_2_layer')
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"training on: {device}")

@@ -34,7 +34,7 @@ def trainSENMNIST():
     #     'accuracy': [],
     #     'test_accuracy': [],
     # }
-    writer = SummaryWriter('runs/SEN_MNIST')
+    writer = SummaryWriter('runs/SEN_MNIST_DEMO')
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"training on: {device}")
