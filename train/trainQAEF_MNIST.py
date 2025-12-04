@@ -15,7 +15,7 @@ TODO:
     Add functionality for each dataset
 """
 
-def trainQAEMNIST():
+def trainQAEF_MNIST():
     """
     Heavily influenced by this guide right here:
         https://pythonguides.com/pytorch-mnist/
@@ -137,4 +137,4 @@ def trainQAEMNIST():
     return test_accuracy
 
 if __name__ == "__main__":
-    trainQAEMNIST()
+    trainQAEF_MNIST()

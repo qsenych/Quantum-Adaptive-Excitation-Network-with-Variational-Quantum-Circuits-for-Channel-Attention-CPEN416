@@ -15,7 +15,7 @@ TODO:
     Add functionality for each dataset
 """
 
-def trainSENMNIST():
+def trainSENF_MNIST():
     """
     Heavily influenced by this guide right here:
         https://pythonguides.com/pytorch-mnist/
@@ -140,4 +140,4 @@ def trainSENMNIST():
     return test_accuracy
 
 if __name__ == "__main__":
-    trainSENMNIST()
+    trainSENF_MNIST()
