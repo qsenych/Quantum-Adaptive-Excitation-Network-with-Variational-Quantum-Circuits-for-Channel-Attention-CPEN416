@@ -14,7 +14,7 @@ from train import trainSENMNIST
 from train import trainSENCiFAR
 from train import trainSENF_MNIST
 from train import trainQAEF_MNIST
-import time
+from train import trainQAE_LQ_PS
 
 """ 
 A script to train and compare  accuracy of all models.
@@ -23,77 +23,58 @@ A script to train and compare  accuracy of all models.
 if __name__ == "__main__":
 
     print("Beginning training of All Models.\n")
-
-    print("SEN-Nets:\n")
     
-    print("- CiFAR: ")
-    start = time.time()
-    sencifar_acc = trainSENCiFAR.trainSENCiFAR()
-    stop = time.time()
-    sencifar_time = stop-start
-    print(sencifar_acc, "\n")
-
-    print("- F_MNIST: ")
-    start = time.time()
-    senf_mnist_acc = trainSENF_MNIST.trainSENF_MNIST()
-    stop = time.time()
-    senf_mnist_time = stop-start
-    print(senf_mnist_acc, "\n")
-
-    print("- MNIST: ")
-    start = time.time()
-    senmnist_acc = trainSENMNIST.trainSENMNIST()
-    stop = time.time()
-    senmnist_time = stop-start
-    print(senmnist_acc, "\n")
-
     print("QAE-Nets:")
 
-    print("- CiFAR 1 Layer:")
-    start = time.time()
-    qaecifar1_acc = trainQAECiFAR1Layer.trainQAECiFAR()
-    stop = time.time()
-    qaecifar1_time = stop-start
-    print(qaecifar1_acc, "\n")
+    # print("- CiFAR 1 Layer:")
+    # qaecifar1_acc = trainQAECiFAR1Layer.trainQAECiFAR()
+    # print(qaecifar1_acc, "\n")
     
-    print("- CiFAR 2 Layer:")
-    start = time.time()
-    qaecifar2_acc = trainQAECiFAR2Layer.trainQAECiFAR()
-    stop = time.time()
-    qaecfiar2_time = stop-start
-    print(qaecifar2_acc, "\n")
+    # print("- CiFAR 2 Layer:")
+    # qaecifar2_acc = trainQAECiFAR2Layer.trainQAECiFAR()
+    # print(qaecifar2_acc, "\n")
     
-    print("- CiFAR 3 Layer:")
-    start = time.time()
-    qaecifar3_acc = trainQAECiFAR3Layer.trainQAECiFAR()
-    stop = time.time()
-    qaecifar3_time = stop-start
-    print(qaecifar3_acc, "\n") 
+    # print("- CiFAR 3 Layer:")
+    # qaecifar3_acc = trainQAECiFAR3Layer.trainQAECiFAR()
+    # print(qaecifar3_acc, "\n") #
     
-    print("- F_MNIST:")
-    start = time.time()
-    qaef_mnist_acc = trainQAEF_MNIST.trainQAEF_MNIST()
-    stop = time.time()
-    qaef_mnist_time = stop-start
-    print(qaef_mnist_acc, "\n")
+    print("lightning adjoint mnist:")
+    qaelq_a_acc = trainQAE_LQ_PS.train_model()
+    print(qaelq_a_acc, "\n") #
+    
+    # print("- F_MNIST:")
+    # qaef_mnist_acc = trainQAEF_MNIST.trainQAEMNIST()
+    # print(qaef_mnist_acc, "\n")
 
-    print("- MNIST")
-    start = time.time()
-    qaemnist_acc = trainQAEMNIST.trainQAEMNIST()
-    stop = time.time()
-    qaemnist_time = stop-start
-    print(qaemnist_acc)
+    # print("- MNIST")
+    # qaemnist_acc = trainQAEMNIST.trainQAEMNIST()
+    # print(qaemnist_acc)
 
-    print("FINISHED ALL TRAINING:\n " \
-    "-----Summary-----\n" \
-    "SEN:\n" \
-    "- CiFAR: ", sencifar_acc,  "TIME: ", sencifar_time,
-    "- F_MNIST: ", senf_mnist_acc,  "TIME: ", senf_mnist_time,
-    "- MNIST: ", senmnist_acc,  "TIME: ", senmnist_time,
-    "QAE:\n" \
-    "- CiFAR(1): ", qaecifar1_acc,  "TIME: ", qaecifar1_time,
-    "- CiFAR(2): ", qaecifar2_acc,  "TIME: ", qaecfiar2_time,
-    "- CiFAR(3): ", qaecifar3_acc,  "TIME: ", qaecifar3_time,
-    "- F_MNIST: ", qaef_mnist_acc, "TIME: ", qaef_mnist_time,
-    "- MNIST: ", qaemnist_acc, "TIME: ", qaemnist_time 
-    )
+
+    # print("SEN-Nets:\n")
+    
+    # print("- CiFAR: ")
+    # sencifar_acc = trainSENCiFAR.trainSENCiFAR()
+    # print(sencifar_acc, "\n")
+
+    # print("- F_MNIST: ")
+    # senf_mnist_acc = trainSENF_MNIST.trainSENMNIST()
+    # print(senf_mnist_acc, "\n")
+
+    # print("- MNIST: ")
+    # senmnist_acc = trainSENMNIST.trainSENMNIST()
+    # print(senmnist_acc, "\n")
+
+    # print("FINISHED ALL TRAINING:\n " \
+    # "-----Summary-----\n" \
+    # "SEN:\n" \
+    # "- CiFAR: ", sencifar_acc, 
+    # "- F_MNIST: ", senf_mnist_acc,
+    # "- MNIST: ", senmnist_acc,
+    # "QAE:\n" \
+    # "- CiFAR1: ", qaecifar1_acc, 
+    # "- CiFAR2: ", qaecifar2_acc, 
+    # "- CiFAR3: ", qaecifar3_acc, 
+    # "- F_MNIST: ", qaef_mnist_acc,
+    # "- MNIST: ", qaemnist_acc,
+    # )
