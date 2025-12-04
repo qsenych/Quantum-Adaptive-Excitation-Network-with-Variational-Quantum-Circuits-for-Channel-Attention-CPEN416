@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import QAE.qae as qae
 import SEN.sen as sen
+import QAE.qae_LS_PS as qae_ls_ps
 
 class CNN(nn.Module):
     """
@@ -18,6 +19,8 @@ class CNN(nn.Module):
 
         if (model == "qae"):
             self.attn = qae.QuantumChannelAttn(channels=12, num_qubits=4, vqc_layers=1)
+        elif(model == "qae_ls_ps"):
+            self.attn = qae_ls_ps.QuantumChannelAttn(channels=12, num_qubits=4, vqc_layers=1)
         elif (model == "sen"):
             self.attn = sen.SEBlock(b=1, c=12)
 

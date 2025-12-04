@@ -8,14 +8,10 @@ from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 import cnn
 
-""" 
-TODO:
-    Add timing (to compare training times)
-    Ensure data colleciton/graphing works with tensorboard
-    Add functionality for each dataset
-"""
+"""This file is nearly identical to trainQAE.py, except it uses the
+PennyLane Lightning GPU device and parameter-shift differentiation method."""
 
-def trainQAEMNIST():
+def train_model():
     """
     Heavily influenced by this guide right here:
         https://pythonguides.com/pytorch-mnist/
@@ -34,7 +30,7 @@ def trainQAEMNIST():
     #     'accuracy': [],
     #     'test_accuracy': [],
     # }
-    writer = SummaryWriter('runs/QAE_MNIST')
+    writer = SummaryWriter('runs/QAE_MNIST_LightningGPU_ParamShift')
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"training on: {device}")
@@ -125,17 +121,10 @@ def trainQAEMNIST():
 
     test_accuracy = 100. * test_correct / len(test_loader.dataset)
     print(f"Test Accuracy: {test_accuracy:.2f}%")
-
-    total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
-    print(f'Total number of parameters: {total_params}')
-
     # history['test_accuracy'].append(test_accuracy)
     writer.add_scalar('Accuracy/test_epoch', test_accuracy, epoch)
 
     writer.close()
 
-    return test_accuracy
-
 if __name__ == "__main__":
-    trainQAEMNIST()
-
+    train_model()
