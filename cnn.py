@@ -65,7 +65,7 @@ class CNN_CIFAR(nn.Module):
         self.conv2 = nn.Conv2d(12,16, kernel_size=5)
         # must be good for 32x32 input
         self.flatten_dim = 16 * 5 * 5
-        self.fc1 = nn.Linear(self.flatten_dim, 256)
+        self.fc1 = nn.Linear(self.flatten_dim, 256, bias=False)
         self.fc2 = nn.Linear(256, 128)
         self.fc3 = nn.Linear(128, 10)
         self.dropout = nn.Dropout(0.5)
