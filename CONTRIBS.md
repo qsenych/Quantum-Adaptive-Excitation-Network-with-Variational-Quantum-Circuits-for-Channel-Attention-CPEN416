@@ -4,7 +4,8 @@
     - qae-net architecture
     - `cnn.py` architecture
     - basic training script
-    - polishing repo
+    - polishing repo/code documentation
+    - README
 
 -   **Robert**
     - `sen.py`

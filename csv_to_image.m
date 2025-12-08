@@ -1,9 +1,11 @@
+% Replicates the graphs from https://arxiv.org/pdf/2507.11217 as images
+
 function plot_losses(csvFiles, legendNames, outFile, plotTitle, colours)
 % plot_losses(csvFiles, legendNames, outFile, plotTitle)
 %
 % csvFiles    = cell array of paths to CSV files
 % legendNames = cell array of labels for each curve
-% outFile     = filename to save the figure (e.g. 'fashionmnist_loss.png')
+% outFile     = filename to save the figure
 % plotTitle   = title of the plot
 
     if length(csvFiles) ~= length(legendNames)
