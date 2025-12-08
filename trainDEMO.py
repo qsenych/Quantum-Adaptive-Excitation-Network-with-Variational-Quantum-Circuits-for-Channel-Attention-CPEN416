@@ -1,15 +1,8 @@
-import torch
-import torch.nn as nn
-import torch.optim as optim
-import torchvision
-import torchvision.transforms as transforms
-# import pandas as pd
-from torch.utils.data import DataLoader
-from torch.utils.tensorboard import SummaryWriter
 from trainModel import trainModel
 
 """ 
-A script to train and compare  accuracy of all models.
+This script runs both our QAEnet and SENet implementation for the purposes
+of demoing to the class our model.
 """
 
 if __name__ == "__main__":

@@ -1,12 +1,7 @@
-import torch
-import torch.nn as nn
-import torch.optim as optim
-import torchvision
-import torchvision.transforms as transforms
 from trainModel import trainModel
 
 """ 
-A script to train and compare  accuracy of all models.
+A script to train and compare accuracy of all models.
 """
 
 if __name__ == "__main__":

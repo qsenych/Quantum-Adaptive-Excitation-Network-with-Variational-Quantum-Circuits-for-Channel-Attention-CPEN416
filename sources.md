@@ -12,6 +12,7 @@
 9. Article on fully connected layers ->
 https://www.geeksforgeeks.org/deep-learning/what-is-fully-connected-layer-in-deep-learning/ 
 10. Squeeze and Excitation Network -> https://medium.com/@tahasamavati/squeeze-and-excitation-explained-387b5981f249 
+11. Explanation of Variational Quantum Algorithms -> https://pennylane.ai/codebook/variational-quantum-algorithms/parametrized-quantum-circuits
 --- 
 *Sources Used*
-3,6,7,9,10
+3,6,7,9,10,11
