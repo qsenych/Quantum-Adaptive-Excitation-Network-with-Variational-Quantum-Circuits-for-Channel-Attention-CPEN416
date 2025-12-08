@@ -16,7 +16,10 @@ class SEBlock(nn.Module):
         Recognition, Salt Lake City, UT, USA, 2018, pp. 7132-7141,
         doi: 10.1109/CVPR.2018.00745.
 
-    The origional paper implies the reduction ratio is 3 to match the quantum parameter counts
+        This source is the Seminal work for SENet.
+
+
+    The paper implies the reduction ratio is 3 to match the quantum parameter counts
 
     Equations:
         z = F_sq(u) = GlobalAvgPool(u)  (Eq. 2)
