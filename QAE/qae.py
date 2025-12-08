@@ -16,13 +16,14 @@ Components:
 Authors: Quinn Senych, Evan Nawfal
 """
 
+
 class QuantumAttnBlk(nn.Module):
     """
     Implements the quantum circuit for channelwise attention.
 
     This circuit processes the compressed channel information and ouputs expectation
     values that are the attention weights.
-    
+
     Circuit structure:
         - starts with H on all qubits
         - encodes inputs per qubit as RZ, RY, RZ
@@ -32,22 +33,22 @@ class QuantumAttnBlk(nn.Module):
         - measures PauliZ expectation values on each qubit
 
     Inputs:
-        num_qubits: number of qubits in the circuit, 
+        num_qubits: number of qubits in the circuit,
                     for this paper this should always be 4
         num_layers: number of variational layers in the model.
-    
+
     Output:
         Tensor of shape (batch_size, num_qubits)
 
     """
 
-    def __init__(self, num_qubits: int = 4 , num_layers: int = 1):
+    def __init__(self, num_qubits: int = 4, num_layers: int = 1):
         super().__init__()
         self.num_qubits = num_qubits
         self.num_layers = num_layers
 
         dev = qml.device("default.qubit", wires=num_qubits)
-        
+
         @qml.qnode(dev, interface="torch")
         def circuit(inputs, weights):
             """
@@ -58,19 +59,19 @@ class QuantumAttnBlk(nn.Module):
                 wire1 - uses indices 3,4,5
                 wire2 - uses indices 6,7,8
                 wire3 - uses indices 9,10,11
-            
+
             parameters:
-                inputs: Input feautres for angle encoding (batch_size x num_qubits*3) 
-                weights: Trainable parameters for unitaries (num_layers x num_qubits x 3) 
+                inputs: Input feautres for angle encoding (batch_size x num_qubits*3)
+                weights: Trainable parameters for unitaries (num_layers x num_qubits x 3)
             """
-            
+
             # enc_angles[:, index] gets the column for that parameter across entire batch
             enc_angles = inputs
             for wire in range(self.num_qubits):
                 # Uniform superposition
                 qml.Hadamard(wires=wire)
 
-                # State preparation 
+                # State preparation
                 i = wire * 3
                 a1 = enc_angles[:, i]
                 a2 = enc_angles[:, i + 1]
@@ -81,7 +82,7 @@ class QuantumAttnBlk(nn.Module):
 
             for l in range(num_layers):
                 # Basic entangling layer but with unitaries applied after CNOTs (match the paper)
-                qml.CNOT(wires=[0, 1]) 
+                qml.CNOT(wires=[0, 1])
                 qml.CNOT(wires=[1, 2])
                 qml.CNOT(wires=[2, 3])
                 qml.CNOT(wires=[3, 0])
@@ -93,17 +94,17 @@ class QuantumAttnBlk(nn.Module):
 
             return [qml.expval(qml.PauliZ(i)) for i in range(num_qubits)]
 
-        
         weight_shapes = {"weights": (num_layers, num_qubits, 3)}
         self.qlayer = qml.qnn.TorchLayer(circuit, weight_shapes)
 
     def forward(self, x):
         """
-        Forward pass of the quantum block, just passes the qml torchlayer 
+        Forward pass of the quantum block, just passes the qml torchlayer
         to pytorch
         """
         return self.qlayer(x)
-        
+
+
 class QuantumChannelAttn(nn.Module):
     """
     Applies the quantum replacement to the SE-block.
@@ -121,6 +122,7 @@ class QuantumChannelAttn(nn.Module):
         num_qubits: qubits used in quantum circuit (defined as 4 in the paper)
         num_layers: trainable quantum layers
     """
+
     def __init__(self, channels=12, num_qubits=4, vqc_layers=1):
         super().__init__()
         self.channels = channels
@@ -131,8 +133,7 @@ class QuantumChannelAttn(nn.Module):
 
         # Quantum "excitation"
         self.quantum_encoder = QuantumAttnBlk(
-            num_qubits=num_qubits, 
-            num_layers=vqc_layers
+            num_qubits=num_qubits, num_layers=vqc_layers
         )
 
         # see eq 7 of the paper - restores the dimentions
@@ -142,7 +143,7 @@ class QuantumChannelAttn(nn.Module):
 
     def forward(self, x):
         """
-        Forward path for pytorch 
+        Forward path for pytorch
         """
         b, c, _, _ = x.size()
 

@@ -1,12 +1,13 @@
 import torch
 import torch.nn as nn
 
+
 class SEBlock(nn.Module):
     """
     Implements the Squeeze-and-Excitation block from the provided text.
-        J. Hu, L. Shen and G. Sun, "Squeeze-and-Excitation Networks," 
-            2018 IEEE/CVF Conference on Computer Vision and Pattern 
-            Recognition, Salt Lake City, UT, USA, 2018, pp. 7132-7141, 
+        J. Hu, L. Shen and G. Sun, "Squeeze-and-Excitation Networks,"
+            2018 IEEE/CVF Conference on Computer Vision and Pattern
+            Recognition, Salt Lake City, UT, USA, 2018, pp. 7132-7141,
             doi: 10.1109/CVPR.2018.00745.
 
         This article also provided implementation details:
@@ -21,29 +22,30 @@ class SEBlock(nn.Module):
 
     Authors: Robert Walsh, Quinn Senych
     """
+
     def __init__(self, c=12, r: int = 3):
         super().__init__()
         self.channels = c
 
         # Squeeze
-            # Use adaptive pooling since I trust pytorch to make
-            # a good kernel size
-            # Squeeze down to n x 1 -> source 9
+        # Use adaptive pooling since I trust pytorch to make
+        # a good kernel size
+        # Squeeze down to n x 1 -> source 9
         self.squeeze = nn.AdaptiveAvgPool2d(1)
-        hidden_size = max(1, c // r) 
-        
+        hidden_size = max(1, c // r)
+
         # Excitation
         self.excitation = nn.Sequential(
-            nn.Linear(c, hidden_size, bias = False),
-            nn.ReLU(inplace = True), # Try to use inplace to improve mem efficiency
-            nn.Linear(hidden_size, c, bias = False),
+            nn.Linear(c, hidden_size, bias=False),
+            nn.ReLU(inplace=True),  # Try to use inplace to improve mem efficiency
+            nn.Linear(hidden_size, c, bias=False),
             nn.Sigmoid(),
         )
 
     def forward(self, x):
         b, c, _, _ = x.size()
         y = self.squeeze(x).view(b, c)
-        y = self.excitation(y).view(b, c,1,1)
+        y = self.excitation(y).view(b, c, 1, 1)
 
         # "Scale and combine" from source 10
         return x * y.expand_as(x)
