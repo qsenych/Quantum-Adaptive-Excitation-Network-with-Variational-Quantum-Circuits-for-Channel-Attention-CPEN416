@@ -6,6 +6,8 @@
     - basic training script
     - polishing repo/code documentation
     - README
+    - presentation
+    - report
 
 -   **Robert**
     - `sen.py`
