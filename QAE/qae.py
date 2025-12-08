@@ -47,6 +47,8 @@ class QuantumAttnBlk(nn.Module):
         self.num_qubits = num_qubits
         self.num_layers = num_layers
 
+        # Use default.qubit instead of lightning.gpu which was defined in the paper.
+        # This results in significantly faster training times.
         dev = qml.device("default.qubit", wires=num_qubits)
 
         @qml.qnode(dev, interface="torch")
@@ -61,7 +63,7 @@ class QuantumAttnBlk(nn.Module):
                 wire3 - uses indices 9,10,11
 
             parameters:
-                inputs: Input feautres for angle encoding (batch_size x num_qubits*3)
+                inputs: Input features for angle encoding (batch_size x num_qubits*3)
                 weights: Trainable parameters for unitaries (num_layers x num_qubits x 3)
             """
 

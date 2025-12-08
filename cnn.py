@@ -37,7 +37,7 @@ class CNN(nn.Module):
         # Implied pooling layer for dimentions to work out
         self.pool = nn.MaxPool2d(2)
 
-        # Attentino mechanism selection
+        # Attention mechanism selection
         if model == "qae":
             self.attn = qae.QuantumChannelAttn(channels=12, num_qubits=4, vqc_layers=1)
         elif model == "sen":
@@ -119,7 +119,6 @@ class CNN_CIFAR(nn.Module):
         self.dropout = nn.Dropout(0.5)
 
     def forward(self, x):
-        # TODO: Double check that doing .relu is correct
         x = self.conv1(x)
         x = self.pool(x)
 

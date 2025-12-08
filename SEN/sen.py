@@ -4,16 +4,19 @@ import torch.nn as nn
 
 class SEBlock(nn.Module):
     """
-    Implements the Squeeze-and-Excitation block from the provided text.
-        J. Hu, L. Shen and G. Sun, "Squeeze-and-Excitation Networks,"
-            2018 IEEE/CVF Conference on Computer Vision and Pattern
-            Recognition, Salt Lake City, UT, USA, 2018, pp. 7132-7141,
-            doi: 10.1109/CVPR.2018.00745.
+    Sources:
+    - https://medium.com/@tahasamavati/squeeze-and-excitation-explained-387b5981f249
 
-        This article also provided implementation details:
-        https://medium.com/@tahasamavati/squeeze-and-excitation-explained-387b5981f249
+        This source provided the source code for the squeeze and excitation block below.
+        The only change we made was to define a hidden_size variable to allow
+        the network dimensions to fit our application correctly.
 
-        Paper implies the reduction ratio is 3 to match the quantum parameter counts
+    - J. Hu, L. Shen and G. Sun, "Squeeze-and-Excitation Networks,"
+        2018 IEEE/CVF Conference on Computer Vision and Pattern
+        Recognition, Salt Lake City, UT, USA, 2018, pp. 7132-7141,
+        doi: 10.1109/CVPR.2018.00745.
+
+    The origional paper implies the reduction ratio is 3 to match the quantum parameter counts
 
     Equations:
         z = F_sq(u) = GlobalAvgPool(u)  (Eq. 2)
@@ -28,9 +31,8 @@ class SEBlock(nn.Module):
         self.channels = c
 
         # Squeeze
-        # Use adaptive pooling since I trust pytorch to make
+        # Use adaptive pooling since we trust pytorch to make
         # a good kernel size
-        # Squeeze down to n x 1 -> source 9
         self.squeeze = nn.AdaptiveAvgPool2d(1)
         hidden_size = max(1, c // r)
 
@@ -47,5 +49,5 @@ class SEBlock(nn.Module):
         y = self.squeeze(x).view(b, c)
         y = self.excitation(y).view(b, c, 1, 1)
 
-        # "Scale and combine" from source 10
+        # "Scale and combine"
         return x * y.expand_as(x)

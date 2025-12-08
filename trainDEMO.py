@@ -22,16 +22,10 @@ if __name__ == "__main__":
     print(senmnist_acc, "\n")
 
     print(
-        "FINISHED ALL TRAINING:\n "
-        "-----Summary-----\n"
-        "SEN:\n"  # "- CiFAR: ", sencifar_acc,
-        # "- F_MNIST: ", senf_mnist_acc,
+        "FINISHED ALL TRAINING:\n " "-----Summary-----\n" "SEN:\n",
         "- MNIST: ",
         senmnist_acc,
-        "QAE:\n"  # "- CiFAR1: ", qaecifar1_acc,
-        # "- CiFAR2: ", qaecifar2_acc,
-        # "- CiFAR3: ", qaecifar3_acc,
-        # "- F_MNIST: ", qaef_mnist_acc,
+        "QAE:\n",
         "- MNIST: ",
         qaemnist_acc,
     )

@@ -42,8 +42,6 @@ def trainModel(
     Author: Quinn Senych, Robert Walsh
     """
 
-    # Batch size optimized for training speed, identical results were observed for smaller batches
-    # Should this be true?? keep it high for ease of training.
     BATCH_SIZE = 1024
     LEARNING_RATE = 0.001
     # Every BATCH_SAMPLING_RES batches it records a value
