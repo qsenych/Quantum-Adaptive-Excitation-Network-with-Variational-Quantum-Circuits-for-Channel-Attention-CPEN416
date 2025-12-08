@@ -88,8 +88,7 @@ The data was then downloaded from tensorboard and turned into images using the m
 
 The runs that produced the result are in the runs folder in the repo. The produced csvs are in runs/csv/ though these are manually extracted from tensorboard. 
 
-## Resources:
-*Useful Resources*
+## Works Consulted
 ---
 1. Paper on SAE Networks -> https://ieeexplore.ieee.org/document/8578843 
 2. Video on SAE Networks -> https://www.youtube.com/watch?v=3b7kMvrPZX8&fbclid=IwY2xjawN4pHZleHRuA2FlbQIxMQBicmlkETFaamJ2cEpidzhSbkxGb0Fpc3J0YwZhcHBfaWQBMAABHqkELARfeVnz2nQ9wWiVohou_sCBeOP10Y0pXJuuzYn8IyqIb7JR-5W_690v_aem_KrmOu12QmV42G2iyyQSMXg
@@ -104,6 +103,5 @@ https://www.geeksforgeeks.org/deep-learning/what-is-fully-connected-layer-in-dee
 10. Squeeze and Excitation Network -> https://medium.com/@tahasamavati/squeeze-and-excitation-explained-387b5981f249 
 11. Explanation of Variational Quantum Algorithms -> https://pennylane.ai/codebook/variational-quantum-algorithms/parametrized-quantum-circuits
 12. Pennylane pytorch integration -> https://www.codegenes.net/blog/pennylane-pytorch/
---- 
-*Sources Used*
-3,6,7,9,10,11,12
+13. TensorFlow Datasets, A collection of ready-to-use datasets -> https://www.tensorflow.org/datasets
+
