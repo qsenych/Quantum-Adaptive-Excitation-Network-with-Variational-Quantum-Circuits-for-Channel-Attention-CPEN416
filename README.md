@@ -53,7 +53,7 @@ would be way too large.
 
 - Install PyTorch (adjust index-url for your cuda version or CPU)
 
-    ```pip3 install torch torchvision --index-url (https://download.pytorch.org/whl/cpu)```
+    ```pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cpu```
 - Install tensorboard for viewing 
 
     ```pip3 install tensorboard```
@@ -72,6 +72,12 @@ trainModel(run_name="QAE_CIFAR-10_2-layers_Run1", model_type="qae", dataset="CIF
 # Train classical SENet on MNIST (default number of epochs is 50):
 trainModel(SEN_MNIST_Run1", model_type="sen", dataset="MNIST", num_layers=50)
 ```
+
+2. trainALL.py: This trains all the models and configurations mentioned in the papers.
+(should take around 4-5 hours)
+
+3. trainDEMO.py: This trains a small subset of models on the MNIST dataset to be run 
+during the presentation (should take around 20 minutes)
 
 ### View TensorBoard logs
 To view metrics after running run this command:
