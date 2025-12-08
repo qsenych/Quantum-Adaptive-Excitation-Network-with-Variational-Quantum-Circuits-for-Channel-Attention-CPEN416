@@ -103,4 +103,5 @@ https://www.geeksforgeeks.org/deep-learning/what-is-fully-connected-layer-in-dee
 10. Squeeze and Excitation Network -> https://medium.com/@tahasamavati/squeeze-and-excitation-explained-387b5981f249 
 11. Explanation of Variational Quantum Algorithms -> https://pennylane.ai/codebook/variational-quantum-algorithms/parametrized-quantum-circuits
 12. Pennylane pytorch integration -> https://www.codegenes.net/blog/pennylane-pytorch/
+13. TensorFlow Datasets, A collection of ready-to-use datasets -> https://www.tensorflow.org/datasets
 
