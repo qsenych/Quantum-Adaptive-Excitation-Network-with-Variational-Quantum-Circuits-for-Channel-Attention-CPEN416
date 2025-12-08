@@ -78,7 +78,9 @@ To view metrics after running run this command:
 (Note: One must install tensorboard first)
 `tensorboard --logdir runs`.
 
-The data was then downloaded from tensorboard and turned into images using the matlab script csv_to_image.m
+The data was then downloaded from tensorboard and turned into images using the matlab script csv_to_image.m.
+
+The runs that produced the result are in the runs folder in the repo. The produced csvs are in runs/csv/ though these are manually extracted from tensorboard. 
 
 ## Resources:
 *Useful Resources*
