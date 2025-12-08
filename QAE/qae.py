@@ -34,8 +34,6 @@ class QuantumAttnBlk(nn.Module):
 
         dev = qml.device("default.qubit", wires=num_qubits)
 
-        # TODO: Double check and verify that doing "adjoint" as diff_method is
-        # equivelent mathematically to paramater_shift
         @qml.qnode(dev, interface="torch")
         def circuit(inputs, weights):
             # the shape of inputs is: (batch_size, numqubits * 3) -> (batch_size, 12)

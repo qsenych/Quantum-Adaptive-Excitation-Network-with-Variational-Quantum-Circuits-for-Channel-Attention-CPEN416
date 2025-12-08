@@ -3,79 +3,97 @@ import torch.nn as nn
 import torch.optim as optim
 import torchvision
 import torchvision.transforms as transforms
-# import pandas as pd
 from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 import cnn
 
-""" 
-TODO:
-    Add timing (to compare training times)
-    Ensure data colleciton/graphing works with tensorboard
-    Add functionality for each dataset
-"""
-
-def trainSENMNIST():
+def trainModel(run_name: str, model_type: str = 'qae', dataset: str = 'MNIST', num_epochs: int = 50, num_layers: int = 1):
     """
     Heavily influenced by this guide right here:
         https://pythonguides.com/pytorch-mnist/
     """
-    BATCH_SIZE = 1000
-    SUBSET_SIZE = 60000
+    BATCH_SIZE = 1024
     LEARNING_RATE = 0.001
-    EPOCHS = 50
-
     # Every BATCH_SAMPLING_RES  batches it records a value
     BATCH_SAMPLING_RES = 6
 
-    # history = {
-    #     'epoch': [],
-    #     'avg_loss': [],
-    #     'accuracy': [],
-    #     'test_accuracy': [],
-    # }
-    writer = SummaryWriter('runs/SEN_MNIST_DEMO')
+    writer = SummaryWriter('runs/' + run_name)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"training on: {device}")
 
-    model = cnn.CNN("sen")
+    if dataset == 'CIFAR-10':
+        model = cnn.CNN_CIFAR(model_type, vqc_layers=num_layers)
+    else:
+        model = cnn.CNN(model_type)
+
     model.to(device)
 
-    transform = transforms.Compose([
-        transforms.ToTensor(),
-        #Standard MNIST normalization
-        transforms.Normalize((0.1307,), (0.3081)) 
-    ])
+    if dataset == 'MNIST':
+        transform = transforms.Compose([
+            transforms.ToTensor(),
+            #Standard MNIST normalization
+            transforms.Normalize((0.1307,), (0.3081)) 
+        ])
 
-    train_dataset = torchvision.datasets.MNIST(
-        root='./data', 
-        train=True, 
-        download=True, 
-        transform=transform
-        )
-    test_dataset = torchvision.datasets.MNIST(
-        root='./data', 
-        train=False, 
-        transform=transform)
+        train_dataset = torchvision.datasets.MNIST(
+            root='./data', 
+            train=True, 
+            download=True, 
+            transform=transform
+            )
+        test_dataset = torchvision.datasets.MNIST(
+            root='./data', 
+            train=False, 
+            transform=transform)
+    elif dataset == 'FashionMNIST':
+        transform = transforms.Compose([
+            transforms.ToTensor(),
+            #Standard FMNIST normalization
+            transforms.Normalize((0.5,), (0.5)) 
+        ])
 
-    # Could use subset for training for efficiency
-    train_dataset = torch.utils.data.Subset(train_dataset, range(SUBSET_SIZE)) 
+        train_dataset = torchvision.datasets.FashionMNIST(
+            root='./data', 
+            train=True, 
+            download=True, 
+            transform=transform
+            )
+        test_dataset = torchvision.datasets.FashionMNIST(
+            root='./data', 
+            train=False, 
+            transform=transform)
+    elif dataset == 'CIFAR-10':
+        transform = transforms.Compose([
+            transforms.ToTensor(),
+            #Standard CIFAR-10 normalization
+            transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)) 
+        ])
+
+        train_dataset = torchvision.datasets.CIFAR10(
+            root='./data', 
+            train=True, 
+            download=True, 
+            transform=transform
+            )
+        test_dataset = torchvision.datasets.CIFAR10(
+            root='./data', 
+            train=False, 
+            transform=transform)
+
+
     
-    train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True)
-    test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False)
-	
-	# train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True)
-	# test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False)
+    
+    train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True, pin_memory=True)
+    test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False, pin_memory=True)
 
-    # TODO: Double check optimizer/optimization methods 
-    optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)
+    optimizer = optim.SGD(model.parameters(), lr=LEARNING_RATE)
     criterion = nn.CrossEntropyLoss()
 
     print("Starting training...")
     
     model.train()
-    for epoch in range(EPOCHS):
+    for epoch in range(num_epochs):
         total_loss = 0
         correct = 0
         
@@ -98,7 +116,7 @@ def trainSENMNIST():
             correct += pred.eq(target.view_as(pred)).sum().item()
 
 
-            if batch_idx % BATCH_SAMPLING_RES == 0:
+            if (batch_idx + 1) % BATCH_SAMPLING_RES == 0:
                 global_step = epoch * len(train_loader) + batch_idx
                 writer.add_scalar('Loss/train_batch', loss.item(), global_step)
 
@@ -109,10 +127,6 @@ def trainSENMNIST():
         accuracy = 100. * correct / len(train_loader.dataset)
         print(f"Epoch {epoch+1} Complete. Avg Loss: {avg_loss:.4f}, Accuracy: {accuracy:.2f}%")
 
-        # history['epoch'].append(epoch + 1)
-        # history['avg_loss'].append(avg_loss)
-        # history['accuracy'].append(accuracy)
-        
         writer.add_scalar('Loss/train_avg_epoch', avg_loss, epoch)
         writer.add_scalar('Accuracy/train_epoch', accuracy, epoch)
 
@@ -132,7 +146,6 @@ def trainSENMNIST():
     total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
     print(f'Total number of parameters: {total_params}')
 
-    # history['test_accuracy'].append(test_accuracy)
     writer.add_scalar('Accuracy/test_epoch', test_accuracy, epoch)
 
     writer.close()
@@ -140,4 +153,5 @@ def trainSENMNIST():
     return test_accuracy
 
 if __name__ == "__main__":
-    trainSENMNIST()
+    trainModel('QAE_MNIST', 'qae', 'MNIST', 1, 1)
+
